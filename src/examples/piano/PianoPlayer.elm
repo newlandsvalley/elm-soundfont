@@ -6,8 +6,8 @@ import Task exposing (..)
 import List exposing (..)
 import Maybe exposing (..)
 import String exposing (..)
-import SoundFont exposing (..)
 import Dict exposing (Dict)
+import SoundFont exposing (..)
 import WebMidi exposing (..)
 
 -- MODEL
@@ -51,15 +51,6 @@ update action model =
                 )        
    
     Play note ->  (model, playNote note model.samples )
-  
-   
-
-showSample : Model -> String
-showSample m =
-   case Dict.isEmpty m.samples of
-     True ->  "nothing"
-     False -> (Dict.keys m.samples)
-              |> toString
 
 
 playNote : MidiNote -> Dict Int SoundSample -> Effects Action
@@ -71,7 +62,7 @@ playNote note samples =
       |> Task.map (\x -> NoOp)
       |> Effects.task
 
-{- Fails with annoying stepTask bug if init implemented in JS -}
+{- Fails with annoying stepTask bug if init implemented as a task in JS -}
 connectMidiDevices : Effects Action
 connectMidiDevices = 
       WebMidi.init
@@ -86,6 +77,16 @@ toInt = String.toInt >> Result.toMaybe >> Maybe.withDefault 0
 
 (=>) = (,)
 
+-- show the highest numbered soundfont so far loaded
+showSample : Model -> String
+showSample m =
+   case Dict.isEmpty m.samples of
+     True ->  "nothing"
+     False -> (Dict.keys m.samples)
+              |> maximum              
+              |> withDefault 0
+              |> toString
+
 startMessage : Bool -> String
 startMessage ready =
    if (ready) then "Now you can attach your MIDI keyboard and play it" else ""
@@ -99,6 +100,7 @@ view address model =
     ]
 
 -- INPUTS
+
 defaultNote : MidiNote
 defaultNote = MidiNote False 0 0 0 ""
 
@@ -106,6 +108,7 @@ defaultNote = MidiNote False 0 0 0 ""
 pianoFonts : Signal (Maybe SoundSample)
 pianoFonts = loadSoundFont  "acoustic_grand_piano"
 
+-- MIDI notes from the keyboard
 pianoNotes : Signal MidiNote
 pianoNotes = WebMidi.midiNoteS
           |> Signal.filter (\n -> n.noteOn) defaultNote

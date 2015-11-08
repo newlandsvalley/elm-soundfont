@@ -12,8 +12,6 @@ Elm.Native.WebMidi.make = function(localRuntime) {
     var connect = NS.input('WebMidi.connect', mconnect("","","","",""));
     var disconnect = NS.input('WebMidi.disconnect', mdisconnect("",""));
 
-    // var init = midiConnect()
-
     // constructor function for Elm tuples
     function mnote(v, w, x, y, z)	{
 	return { 
@@ -45,6 +43,11 @@ Elm.Native.WebMidi.make = function(localRuntime) {
 	  };
     }
 
+    /* I intend eventually to return init defined like this.  In other words
+     * it would allow us to detect our midi devices as an Elm Task.
+     * Unfortunately it crashes in Elm runtime's stepTask in Elm 0.15
+     * See https://github.com/elm-lang/core/issues/240
+     */
     function init ()  {
         console.log("init: " )
             return Task.asyncFunction(function (callback) {

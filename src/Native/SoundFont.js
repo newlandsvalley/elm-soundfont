@@ -15,6 +15,7 @@ Elm.Native.SoundFont.make = function (localRuntime) {
 
     values.context = new (window.AudioContext || window.webkitAudioContext)();
 
+    /* Get the current time from the audio context */
     values.getCurrentTime = function() {
       return values.context.currentTime;
     };
@@ -23,6 +24,7 @@ Elm.Native.SoundFont.make = function (localRuntime) {
     /*
      * nameToUrl
      * Given an instrument name returns a URL to its Soundfont js file
+     * (we only use acoustic grand piano at the moment)
      *
      * @param {String} name - instrument name
      * @returns {String} the Soundfont data url
@@ -72,7 +74,6 @@ Elm.Native.SoundFont.make = function (localRuntime) {
     }
 
     /*
-     * @param {Object} ctx - Web Audio context
      * @param {String} name - The bank name
      * @param {Object} data - The Soundfont instrument data as JSON
      */
@@ -85,10 +86,9 @@ Elm.Native.SoundFont.make = function (localRuntime) {
     }
 
 
-
    /*
     * INTENAL: decodeBank
-    * Given an instrument, returns a Promise that resolves when
+    * Given a soundfont bank, returns a Promise that resolves when
     * all the notes from the instrument are decoded
     */
    function decodeBank(bank) {
@@ -98,8 +98,6 @@ Elm.Native.SoundFont.make = function (localRuntime) {
            note = parseNote(note); 
            noteName = (note.midi).toString();
            console.log("decodeBank note: ", note.name);
-           // bank.buffers[note.midi] = buffer;
-           // localRuntime.notify(values.soundfontSignal.id, Maybe.Just(values.createAudioBuffer(note.name, buffer)));
            localRuntime.notify(values.soundfontSignal.id, Maybe.Just(values.createAudioBuffer(noteName, buffer)));
         });
       });
@@ -125,13 +123,10 @@ Elm.Native.SoundFont.make = function (localRuntime) {
       });
     }
 
-    /* AudioBuffer */
+    /* Create an AudioBuffer named after the note it provides */
     values.createAudioBuffer = function(name, buffer) {
       return {ctor: "AudioBuffer", "name" : name, "buffer" : buffer};
     };
-
-
-
 
 
     /*
@@ -258,6 +253,7 @@ Elm.Native.SoundFont.make = function (localRuntime) {
 
 /* END OF PARSE NOTE */
  
+    /* play an audio buffer at the supplied time offet */
     values.play = F2(function (buffer, time) {
         console.log("buffer to play: " + buffer + " time: " + time)
             return Task.asyncFunction(function (callback) {

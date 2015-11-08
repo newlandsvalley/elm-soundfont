@@ -20,11 +20,7 @@ module SoundFont
 
 import Native.SoundFont
 import Task exposing (Task, andThen, mapError, succeed)
-import Http exposing (..)
 import Maybe exposing (Maybe)
-
-{-| Bobs redefined -}
-type Blob = Blob
 
 {-| AudioBuffers -}
 type AudioBuffer = AudioBuffer
@@ -41,16 +37,13 @@ type alias SoundBite =
    ,time : Float
   }
 
-
 {-| Load an Audio Buffer Sound Sample from a URL -}
 loadSoundFont: String -> Signal (Maybe SoundSample)
 loadSoundFont name =  Native.SoundFont.loadSoundFont name
 
-
-{-| Get the ausio context's current time -}
+{-| Get the audio context's current time -}
 getCurrentTime : () -> Float
 getCurrentTime = Native.SoundFont.getCurrentTime
-
 
 {-| play an optional sound sample (if it's there) -}
 maybePlay : SoundBite -> Task x ()
