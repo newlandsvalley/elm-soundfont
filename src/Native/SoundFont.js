@@ -262,7 +262,8 @@ Elm.Native.SoundFont.make = function (localRuntime) {
             });
         });
 
-    function playSound(buffer, time) {
+    function playSound(buffer, time) { 
+      // console.log("playing buffer at time: " + time)
       var source = values.context.createBufferSource();
       source.buffer = buffer;
       source.connect(values.context.destination);
