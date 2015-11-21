@@ -62,7 +62,7 @@ playNote note samples =
       |> Task.map (\x -> NoOp)
       |> Effects.task
 
-{- Fails with annoying stepTask bug if init implemented as a task in JS -}
+{- inistialise any connected MIDI devices -}
 connectMidiDevices : Effects Action
 connectMidiDevices = 
       WebMidi.init
@@ -95,7 +95,7 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   div []
     [ 
-      div [  ] [ text ("loaded soundfonts for midi notes: " ++ showSample model) ],
+      div [  ] [ text ("loaded soundfont for midi note: " ++ showSample model) ],
       div [  ] [ text (startMessage model.loaded) ]
     ]
 

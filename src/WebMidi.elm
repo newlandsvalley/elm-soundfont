@@ -78,11 +78,9 @@ midiDisconnectS: Signal MidiDisconnect
 midiDisconnectS =
    Native.WebMidi.disconnect
 
-{-| Initialise MIDI to set up the signals 
-    Desperate attempt at workaround for steptask bug
--}
+{-| Initialise MIDI to set up the signals -}
 init : Task x ()
-init = Task.succeed ( Native.WebMidi.init () )
+init = Native.WebMidi.init () 
 
 
 

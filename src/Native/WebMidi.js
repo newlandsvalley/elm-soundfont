@@ -7,6 +7,7 @@ Elm.Native.WebMidi.make = function(localRuntime) {
 
     var Utils = Elm.Native.Utils.make(localRuntime);
     var NS = Elm.Native.Signal.make(localRuntime); 
+    var Task = Elm.Native.Task.make(localRuntime);
 
     var note = NS.input('WebMidi.note', mnote(false,0,0,0,""));
     var connect = NS.input('WebMidi.connect', mconnect("","","","",""));
@@ -141,7 +142,7 @@ Elm.Native.WebMidi.make = function(localRuntime) {
         note: note,
         connect: connect,
         disconnect: disconnect,
-        init: midiConnect
+        init: init
     };
 };
 
