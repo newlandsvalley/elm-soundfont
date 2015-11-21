@@ -1,7 +1,7 @@
 elm-soundfont
 =============
 
-This project explores the possibilities of playing MIDI directly in the browser within an Elm (0.15) application.  It contains two putative Elm Native libraries:
+This project explores the possibilities of playing MIDI directly in the browser within an Elm (0.16) application.  It contains two putative Elm Native libraries:
 
 *   Elm-WebMidi.  This library is a simple wrapper round [Web-MIDI](http://www.w3.org/TR/webmidi/) and provides signals of connection/disconnection of MIDI input devices and also of MIDI notes (for example whenever a key is pressed on a MIDI keyboard).  Unfortunately, this code is reproduced from [newlandsvalley/elm-WebMidi](https://github.com/newlandsvalley/elm-WebMidi) because it is not yet 'blessed' as an Elm Community Package and linking seems difficult in any other manner.
 
@@ -19,7 +19,7 @@ elm-make src/examples/SoundFontSignal.elm --output=Main.html
 Issues
 ------
 
-I seem to be hamstrung by [this issue](https://github.com/elm-lang/core/issues/240) whenever I attempt to use Native Task.asyncFunction when the function implementation itself uses asynchronous javascript methods.  In consequence, all asynchronous interfaces have been modeled as signals rather than tasks. 
+I seem to be have been hamstrung under Elm 0.15 by [this issue](https://github.com/elm-lang/core/issues/240) whenever I attempted to use Native Task.asyncFunction when the function implementation itself uses asynchronous javascript methods.  In consequence, all asynchronous interfaces have been modeled as signals rather than tasks. 
 
 
 
