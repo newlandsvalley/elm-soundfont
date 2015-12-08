@@ -3,3 +3,5 @@ elm-stuff
 elm.js
 Main.html
 compilep.sh
+compilec.sh
+/deprecated/
