@@ -15,7 +15,7 @@ Examples
 
 #### MIDI Keyboard
 
-Main.elm in the examples/piano directory is a bare-bones application that plays notes that are detected from an attached MIDI keyboard.  It first loads the acoustic grand piano soundfont into a Dictionary of AudioBuffers (one for each note).  It then detects keyboard presses and plays the corresponsing note using the Web-Audio API.  To build, use:
+Main.elm in the examples/piano directory is a bare-bones application that plays notes that are detected from an attached MIDI keyboard.  It first loads the acoustic grand piano soundfont into a Dictionary of AudioBuffers (one for each note).  It then detects keyboard presses and plays the corresponding note using the Web-Audio API.  To build, use:
 
 elm-make src/examples/piano/Main.elm --output=Main.html
 
