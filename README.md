@@ -27,7 +27,7 @@ elm-make src/examples/simpleplayer/Main.elm --output=Main.html
 
 #### MIDI Audio Controller
 
-Main.elm in the examples/type0player directory is another MIDI file player. But here, the playback is controlled by means of start/pause/continue buttons. The file must conform to MIDI type 0 (i.e. single track). At some point I need to include a better UI widget to do the controlling. To build use:
+Main.elm in the examples/type0player directory is another MIDI file player. But here, the playback is controlled by means of start/pause/continue buttons in a half-finished CSS player. The file must conform to MIDI type 0 (i.e. single track). To build use:
 
 elm-make src/examples/type0player/Main.elm --output=Main.html
 
