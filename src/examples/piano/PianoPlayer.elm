@@ -56,7 +56,10 @@ update action model =
 playNote : MidiNote -> Dict Int SoundSample -> Effects Action
 playNote note samples =       
     let n = Dict.get note.pitch samples  
-        np = SoundBite n 0
+        maxVelocity = 0x7F
+        gain =
+          Basics.toFloat note.velocity / maxVelocity
+        np = SoundBite n 0 gain
     in
        maybePlay np
       |> Task.map (\x -> NoOp)

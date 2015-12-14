@@ -34,7 +34,8 @@ type alias SoundSample =
 {-| Sound Bites -}
 type alias SoundBite =
   { mss  : Maybe SoundSample
-   ,time : Float
+  , time : Float
+  , gain : Float
   }
 
 {-| Load an Audio Buffer Sound Sample from a URL -}
@@ -52,4 +53,4 @@ maybePlay sb =
       Nothing ->
          succeed ()
       Just ss -> 
-         Native.SoundFont.play ss.buffer (getCurrentTime() + sb.time)
+         Native.SoundFont.play ss.buffer (getCurrentTime() + sb.time) sb.gain

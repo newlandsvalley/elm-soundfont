@@ -109,9 +109,14 @@ nextSound ticksPerBeat samples ne acc =
      -- we've hit a Note
      Note pitch velocity ->
        let 
-         elapsedTime = microsecondsPerBeat * Basics.toFloat ticks / (Basics.toFloat ticksPerBeat  * 1000000)
-         sample = Dict.get pitch samples
-         soundBite = { mss = sample, time = elapsedTime }
+         elapsedTime = 
+           microsecondsPerBeat * Basics.toFloat ticks / (Basics.toFloat ticksPerBeat  * 1000000)
+         sample = 
+           Dict.get pitch samples
+         maxVelocity = 0x7F
+         gain =
+           Basics.toFloat velocity / maxVelocity
+         soundBite = { mss = sample, time = elapsedTime, gain = gain }
          fn = maybePlay soundBite
        in
          (fn :: sounds,  microsecondsPerBeat)

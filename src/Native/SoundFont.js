@@ -15,6 +15,7 @@ Elm.Native.SoundFont.make = function (localRuntime) {
 
     values.context = new (window.AudioContext || window.webkitAudioContext)();
 
+   
     /* Get the current time from the audio context */
     values.getCurrentTime = function() {
       return values.context.currentTime;
@@ -253,20 +254,23 @@ Elm.Native.SoundFont.make = function (localRuntime) {
 
 /* END OF PARSE NOTE */
  
-    /* play an audio buffer at the supplied time offet */
-    values.play = F2(function (buffer, time) {
-        console.log("buffer to play: " + buffer + " time: " + time)
+    /* play an audio buffer at the supplied time offet and with appropriate volume (gain) */
+    values.play = F3(function (buffer, time, gain) {
+        console.log("buffer to play: " + buffer + " time: " + time + " with gain: " + gain)
             return Task.asyncFunction(function (callback) {
-                playSound(buffer, time)
+                playSound(buffer, time, gain)
                 callback(Task.succeed(Utils.Tuple0));
             });
         });
 
-    function playSound(buffer, time) { 
-      // console.log("playing buffer at time: " + time)
-      var source = values.context.createBufferSource();
+    function playSound(buffer, time, gain) { 
+      // console.log("playing buffer at time: " + time + " with gain: " + gain)
+      var source = values.context.createBufferSource(); 
+      var gainNode = values.context.createGain();
+      gainNode.gain.value = gain;
       source.buffer = buffer;
-      source.connect(values.context.destination);
+      source.connect(gainNode);
+      gainNode.connect(values.context.destination)
       source.start(time);
     }
 

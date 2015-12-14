@@ -206,8 +206,11 @@ playEvent soundEvent state samples =
            { state | index = state.index + 1}
           sample = 
            Dict.get pitch samples
+          maxVelocity = 0x7F
+          gain =
+            Basics.toFloat velocity / maxVelocity
           soundBite = 
-           { mss = sample, time = 0.0 }
+           { mss = sample, time = 0.0, gain = gain }
         in
           Task.map (\_ -> newstate) <| maybePlay soundBite
       _  -> 
