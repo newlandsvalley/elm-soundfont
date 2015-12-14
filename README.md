@@ -37,6 +37,8 @@ Issues
 
 I was hamstrung under Elm 0.15 by [this issue](https://github.com/elm-lang/core/issues/240) whenever I attempted to use Native Task.asyncFunction when the function implementation itself uses asynchronous javascript methods.  In consequence, I modeled all asynchronous interfaces as signals rather than tasks. This bug is now fixed in Elm 0.16, which in turn allows me to initialise connections to MIDI devices as a Task.  However I have (so far) retained the use of signals for loading soundfonts.
 
+The simplePlayer example doesn't (yet) recognize Running Status messages.
+
 
 
 

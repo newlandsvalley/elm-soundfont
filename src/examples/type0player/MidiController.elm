@@ -36,9 +36,11 @@ type alias SoundEvent =
 
 -- the current state of the playback 
 type alias PlaybackState =
-   { index : Int
-   , microsecondsPerBeat : Float
-   , playing : Bool
+   { index : Int                    -- index into the MidiMessage Array
+   , microsecondsPerBeat : Float    -- current Tempo
+   , playing : Bool                 -- are we currently playing?
+   , noteOnSequence : Bool          -- are we in the midst of a NoteOn sequence
+   , noteOnChannel : Int            -- if so, what's its channel
    }
 
 type alias Model =
@@ -57,6 +59,8 @@ init topic =
     , playbackState = { index = 0 
                       , microsecondsPerBeat = Basics.toFloat 500000
                       , playing = False 
+                      , noteOnSequence = False
+                      , noteOnChannel = -1
                       }
     }
   , Effects.none
@@ -129,7 +133,7 @@ update action model =
        if  model.playbackState.playing then
          let 
            event = nextEvent playbackState model.track0
-           nextAction = interpretSoundEvent event playbackState model.samples
+           nextAction = interpretSoundEvent event playbackState model
            -- get the new state from the result of the last sound we've played
            newModel = { model | playbackState = playbackState }
          in
@@ -183,29 +187,47 @@ nextEvent state track0Result =
           { deltaTime = 0.0, event = TrackEnd }
 
 {- interpret the sound event - delay for the specified time and play the note if it's a NoteOn event -}
-interpretSoundEvent : SoundEvent -> PlaybackState -> Dict Int SoundSample -> Effects Action
-interpretSoundEvent soundEvent state ss = 
+interpretSoundEvent : SoundEvent -> PlaybackState -> Model -> Effects Action
+interpretSoundEvent soundEvent state model = 
       (Task.sleep soundEvent.deltaTime 
-        `andThen` \_ -> playEvent soundEvent state ss)
+        `andThen` \_ -> playEvent soundEvent state model)
       |> Task.map (\s -> 
          if s.playing then Play s else NoOp)
       |> Effects.task
 
-{- step through the state, and play the note if it's a NoteOn message -}
-playEvent : SoundEvent -> PlaybackState -> Dict Int SoundSample -> Task x PlaybackState 
-playEvent soundEvent state samples = 
+{- step through the state, and play the note if it's a NoteOn message
+   if it's a RunningStatus message, then play the note if the previous message was NoteOn 
+-}
+playEvent : SoundEvent -> PlaybackState -> Model -> Task x PlaybackState 
+playEvent soundEvent state model = 
   if state.playing then
     case soundEvent.event of
       TrackEnd ->
-        succeed { state | playing = False }
+        succeed { state | playing = False, noteOnSequence = False }
+
       Tempo t -> 
-        succeed { state | microsecondsPerBeat = Basics.toFloat t, index = state.index + 1}
+        succeed { state | microsecondsPerBeat = Basics.toFloat t, index = state.index + 1, noteOnSequence = False}
+     
+      {- Running Status inherits the channel from the last event but only (in our case)
+         if the state shows we're in the midst of a NoteOn sequence (i.e. a NoteOn followed 
+         immediately by 0 or more RunningStatus) then we generate a new NoteOn
+      -}
+      RunningStatus p1 p2 ->
+        if state.noteOnSequence then
+            let 
+              newEvent = { deltaTime = soundEvent.deltaTime, event = NoteOn state.noteOnChannel p1 p2 }
+            in
+              playEvent newEvent state model
+          else
+            -- ignore anything else and reset the sequence state
+            succeed { state | index = state.index + 1, noteOnSequence = False}
+      
       NoteOn channel pitch velocity ->
         let
           newstate = 
-           { state | index = state.index + 1}
+           { state | index = state.index + 1, noteOnSequence = True, noteOnChannel = channel }
           sample = 
-           Dict.get pitch samples
+           Dict.get pitch model.samples
           maxVelocity = 0x7F
           gain =
             Basics.toFloat velocity / maxVelocity
@@ -214,10 +236,9 @@ playEvent soundEvent state samples =
         in
           Task.map (\_ -> newstate) <| maybePlay soundBite
       _  -> 
-        succeed { state | index = state.index + 1}
+        succeed { state | index = state.index + 1, noteOnSequence = False}
    else
      succeed state
-
 
 {- extract the true response, concentrating on 200 statuses - assume other statuses are in error
    (usually 404 not found)
