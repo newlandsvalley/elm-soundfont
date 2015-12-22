@@ -8,7 +8,8 @@
         "src/examples",
         "src/examples/piano",
         "src/examples/simpleplayer",
-        "src/examples/type0player"
+        "src/examples/type0player",
+        "src/test/playlist"
     ],
     "exposed-modules": [
         "SoundFont"

@@ -21,13 +21,13 @@ elm-make src/examples/piano/Main.elm --output=Main.html
 
 #### MIDI File
 
-Main.elm in the examples/simpleplayer directory is a bare-bones player of a MIDI file (a Swedish tune called 'Lillasystern').  It first loads the acoustic grand piano soundfont as before, loads and parses the MIDI file and converts this into a performance simply by accumulating the elapsed times of each 'NoteOn' event. It then converts each of these to a playable 'sound bite' attached to the appropriate soundfont and plays them as a single uninterruptable Task.  To build use:
+Main.elm in the examples/simpleplayer directory is a bare-bones player of a Type-0 MIDI file (a Swedish tune called 'Lillasystern').  It first loads the acoustic grand piano soundfont as before, loads and parses the MIDI file and converts this into a performance simply by accumulating the elapsed times of each 'NoteOn' event. It then converts each of these to a playable 'sound bite' attached to the appropriate soundfont and plays them as a single uninterruptable Task.  To build use:
 
 elm-make src/examples/simpleplayer/Main.elm --output=Main.html
 
 #### MIDI Audio Controller
 
-Main.elm in the examples/type0player directory is another MIDI file player. But here, the playback is controlled by means of start/pause/continue buttons in a half-finished CSS-styled player. The file must conform to MIDI type 0 (i.e. single track). To build use:
+Main.elm in the examples/type0player directory is another MIDI file player. But here, the playback is controlled by means of start/pause/continue buttons in a half-finished CSS-styled player. The file must again conform to MIDI type-0 (i.e. single track). To build use:
 
 elm-make src/examples/type0player/Main.elm --output=Main.html
 
