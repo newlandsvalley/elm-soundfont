@@ -9,6 +9,8 @@ This project explores the possibilities of playing MIDI directly in the browser 
 
 *   SoundFont.  This library is a simple native code wrapper around the essential features of the [soundfont-player](https://github.com/danigb/soundfont-player) from danigb. At the moment it chooses just one sound font - an acoustic grand piano - taken from Benjamin Gleitzman's package of [pre-rendered sound fonts](https://github.com/gleitz/midi-js-soundfonts). It provides a signal of Audio Buffers for each possible MIDI note and uses [Web-Audio](https://webaudio.github.io/web-audio-api/) to play the sounds. This is eventually probably better written in pure Elm.
 
+At the moment, the sample file players handle only Type-0 MIDI files but the intention is eventually to handle Type-1 and Type-2 as well.
+
 
 Examples
 --------
