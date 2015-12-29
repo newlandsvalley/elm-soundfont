@@ -37,7 +37,7 @@ elm-make src/examples/type0player/Main.elm --output=Main.html
 Issues
 ------
 
-The sample tune has a tempo of 120 bpm which is what the simple player delivers. However, with the audio controller, the tempo slows to something closer to 110 bpm.  In other words, Elm's Tasks impose a significant impact on responsiveness.
+The sample tune has a tempo of 120 bpm which is what the simple player delivers. However, with the audio controller, the tempo slows to something closer to 110 bpm.  In other words, Elm's Tasks impose a significant burden on responsiveness.
 
 I was hamstrung under Elm 0.15 by [this issue](https://github.com/elm-lang/core/issues/240) whenever I attempted to use Native Task.asyncFunction when the function implementation itself uses asynchronous javascript methods.  In consequence, I modeled all asynchronous interfaces as signals rather than tasks. This bug is now fixed in Elm 0.16, which in turn allows me to initialise connections to MIDI devices as a Task.  However I have (so far) retained the use of signals for loading soundfonts.
 
