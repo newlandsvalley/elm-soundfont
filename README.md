@@ -23,7 +23,7 @@ elm-make src/examples/piano/Main.elm --output=Main.html
 
 #### MIDI File
 
-Main.elm in the examples/simpleplayer directory is a bare-bones player of a Type-0 MIDI file (a Swedish tune called 'Lillasystern').  It first loads the acoustic grand piano soundfont as before, loads and parses the MIDI file and converts this into a performance simply by accumulating the elapsed times of each 'NoteOn' event. It then converts each of these to a playable 'sound bite' attached to the appropriate soundfont and plays them as a single uninterruptable Task.  To build use:
+Main.elm in the examples/simpleplayer directory is a bare-bones player of a Type-0 MIDI file (a Swedish tune called 'Lillasystern').  It first loads the acoustic grand piano soundfont as before, loads and parses the MIDI file and converts this into a performance simply by accumulating the elapsed times of each 'NoteOn' event. It then converts each of these to a playable 'sound bite' attached to the appropriate soundfont and plays them as a single uninterruptable Task. The player can be used with Type-1 or Type-2 files, but only the first melody track will be played. To build use:
 
 elm-make src/examples/simpleplayer/Main.elm --output=Main.html
 
@@ -41,7 +41,7 @@ The sample tune has a tempo of 120 bpm which is what the simple player delivers.
 
 I was hamstrung under Elm 0.15 by [this issue](https://github.com/elm-lang/core/issues/240) whenever I attempted to use Native Task.asyncFunction when the function implementation itself uses asynchronous javascript methods.  In consequence, I modeled all asynchronous interfaces as signals rather than tasks. This bug is now fixed in Elm 0.16, which in turn allows me to initialise connections to MIDI devices as a Task.  However I have (so far) retained the use of signals for loading soundfonts.
 
-The simplePlayer example doesn't (yet) recognize Running Status messages.
+I think it is not yet possible to build a player for Type-1 files (multiple tracks played simultaneously) with Elm in its current state.  This is because we need concurrency primitives which can be used with the Task library.  See [this discussion](https://groups.google.com/forum/#!topic/elm-discuss/NDAYIAML438).
 
 
 

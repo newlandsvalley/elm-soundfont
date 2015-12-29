@@ -134,8 +134,11 @@ makeSounds ss perfResult =
         let 
           fn = nextSound perf.ticksPerBeat ss
           defaultPace =  Basics.toFloat 500000
+          line = perf.lines
+                 |> List.head
+                 |> withDefault []
         in
-          List.foldl fn ([], defaultPace) perf.events 
+          List.foldl fn ([], defaultPace) line
           |> fst 
           |> List.reverse 
        Err err ->

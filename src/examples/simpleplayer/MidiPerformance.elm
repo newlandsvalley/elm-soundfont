@@ -16,39 +16,42 @@ module MidiPerformance ( Notable (..)
 -}
 
 import CoMidi exposing (..)
+import Maybe exposing (withDefault)
 
 type alias AccumulatedTime = Int
-
-{-| Note -}
-{-
-type alias Note = 
-   { pitch : Int
-   , velocity : Int
-   }
--}
 
 {-| Note descriptions we need to keep-}
 type Notable =  MicrosecondsPerBeat Int
               | Note Int Int
               | NoNote
 
-{-| Midi Message -}    
+{-| Midi NoteEvent -}    
 type alias NoteEvent = (AccumulatedTime, Notable)
+
+{-| Melody Line -}    
+type alias Line = List NoteEvent
 
 {-| Midi Performance -}
 type alias MidiPerformance = 
-    { ticksPerBeat : Int
-    , events : List NoteEvent
+    { formatType : Int
+    , ticksPerBeat : Int
+    , lines : List Line
     }
 
 {-| translate a MIDI recording to a simple performance -}
 fromRecording : MidiRecording -> MidiPerformance
 fromRecording mr = 
    let 
-      events = List.map eventToNotable <| List.concat <| List.map accumulateTimes <| snd mr
       header = fst mr
+      lines = List.map makeNotes 
+              <| List.map accumulateTimes 
+              <| snd mr
+      linesWithTempo = distributeTempo header.formatType lines
    in 
-      { ticksPerBeat = header.ticksPerBeat, events = events }
+      { formatType = header.formatType, ticksPerBeat = header.ticksPerBeat, lines = linesWithTempo }
+
+makeNotes : List (Int, MidiEvent) -> List (Int, Notable)
+makeNotes = List.map eventToNotable
 
 {- translate a timed MidiEvent to a timed Notable -}
 eventToNotable : (Int, MidiEvent) -> (Int, Notable)
@@ -78,3 +81,20 @@ accum nxt acc = let at = case acc of
 {-| accumulate the timings and leave only Tempo and NoteOn messages -}
 accumulateTimes : Track -> Track
 accumulateTimes = filterEvents << List.reverse << List.foldl accum [] 
+
+{- distribute the tempo if it's a Type-1 or Type-2 recording.
+   This is done by taking the head of the list - Track 0 (which may or may not contain a tempo)
+   and appending it to each of the following tracks
+-}
+distributeTempo : Int -> List Line -> List Line
+distributeTempo formatType ls =
+  case formatType of
+    0 -> ls
+    _ -> 
+      let 
+        t0 = List.head ls
+             |> withDefault []
+        ts = List.tail ls
+             |> withDefault []
+      in
+        List.map (\t -> t0 ++ t) ts
