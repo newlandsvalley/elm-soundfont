@@ -10,7 +10,7 @@ import Maybe exposing (..)
 import String exposing (..)
 import Result exposing (Result)
 import Dict exposing (Dict)
-import CoMidi exposing (MidiRecording, normalise, parse)
+import CoMidi exposing (MidiRecording, normalise, parse, translateRunningStatus)
 import SoundFont exposing (..)
 import MidiPerformance exposing (..)
 
@@ -173,7 +173,7 @@ toPerformance r = Result.map fromRecording r
 parseLoadedFile : Result String Value -> Result String MidiPerformance
 parseLoadedFile r = case r of
   Ok text -> case text of
-    Text s -> s |> normalise |> parse |> toPerformance
+    Text s -> s |> normalise |> parse |> translateRunningStatus |> toPerformance
     Blob b -> Err "Blob unsupported"
   Err e -> Err e
 
