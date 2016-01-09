@@ -7,7 +7,7 @@ This project explores the possibilities of playing MIDI directly in the browser 
 
 *   Elm-comidi.  This is a parser for MIDI file images which uses the elm-combine parser combinator library and is now 'sanctified' as a community package. 
 
-*   SoundFont.  This library is a simple native code wrapper around the essential features of the [soundfont-player](https://github.com/danigb/soundfont-player) from danigb. At the moment it chooses just one sound font - an acoustic grand piano - taken from Benjamin Gleitzman's package of [pre-rendered sound fonts](https://github.com/gleitz/midi-js-soundfonts). It provides a signal of Audio Buffers for each possible MIDI note and uses [Web-Audio](https://webaudio.github.io/web-audio-api/) to play the sounds. Much of this would eventually probably better written in pure Elm but the reliance on Web-Audio by means of some sort of native interface remains.
+*   SoundFont.  This library is a simple native code wrapper around the essential features of the [soundfont-player](https://github.com/danigb/soundfont-player) from danigb. At the moment it chooses just one sound font - an acoustic grand piano - taken from Benjamin Gleitzman's package of [pre-rendered sound fonts](https://github.com/gleitz/midi-js-soundfonts). It provides a signal of Audio Buffers for each possible MIDI note and uses [Web-Audio](https://webaudio.github.io/web-audio-api/) to play the sounds. Much of this would eventually probably be better written in pure Elm but the reliance on Web-Audio by means of some sort of native interface remains.
 
 At the moment, the sample file players handle only Type-0 MIDI files but the intention is eventually to handle Type-1 and Type-2 as well.
 
