@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "summary": "Experimental library for Web Audio",
+    "summary": "Experimental library for soundfonts used with Web Audio",
     "repository": "https://github.com/newlandsvalley/elm-soundfont.git",
     "license": "BSD3",
     "source-directories": [
@@ -20,7 +20,7 @@
         "evancz/elm-effects": "2.0.1 <= v < 3.0.0",
         "evancz/elm-http": "3.0.0 <= v < 4.0.0",
         "evancz/elm-html": "4.0.2 <= v < 5.0.0",
-        "Bogdanp/elm-combine": "1.2.0 <= v < 2.0.0",
-        "evancz/start-app": "2.0.2 <= v < 3.0.0"
+        "evancz/start-app": "2.0.2 <= v < 3.0.0",
+        "newlandsvalley/elm-comidi": "1.0.1 <= v < 2.0.0"
     },
     "elm-version": "0.16.0 <= v < 0.17.0"}

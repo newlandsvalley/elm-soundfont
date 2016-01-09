@@ -11,7 +11,7 @@ module MidiController where
 -}
 
 import Effects exposing (Effects, task)
-import Html exposing (..)
+import Html exposing (Html, div, button, input, text, progress)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (src, type', style, value, max)
 import Http exposing (..)
@@ -49,6 +49,10 @@ type alias Model =
     , track0 : Result String MidiTrack0
     , playbackState : PlaybackState
     }
+    
+-- let's use this to mark the end of a track or a track in error we can't play
+endOfTrack : CoMidi.MidiEvent
+endOfTrack = CoMidi.Text "EndOfTrack"
 
 init : String -> (Model, Effects Action)
 init topic =
@@ -177,14 +181,15 @@ nextEvent state track0Result =
         let 
           maybeNextMessage = track0.messages
                              |> Array.get state.index
-          nextMessage = Maybe.withDefault (0, TrackEnd) maybeNextMessage
+          nextMessage = Maybe.withDefault (0, endOfTrack ) maybeNextMessage
           nextEvent = snd nextMessage     
           -- work out the interval to the next note in milliseconds       
           deltaTime = fst nextMessage * state.microsecondsPerBeat  / (Basics.toFloat track0.ticksPerBeat  * 1000)
         in
           { deltaTime = deltaTime, event = nextEvent }
        Err err ->
-          { deltaTime = 0.0, event = TrackEnd }
+          { deltaTime = 0.0, event = endOfTrack }
+          
 
 {- interpret the sound event - delay for the specified time and play the note if it's a NoteOn event -}
 interpretSoundEvent : SoundEvent -> PlaybackState -> Model -> Effects Action
@@ -202,8 +207,11 @@ playEvent : SoundEvent -> PlaybackState -> Model -> Task x PlaybackState
 playEvent soundEvent state model = 
   if state.playing then
     case soundEvent.event of
-      TrackEnd ->
-        succeed { state | playing = False, noteOnSequence = False }
+      CoMidi.Text t ->
+        if (t == "EndOfTrack") then      
+          succeed { state | playing = False, noteOnSequence = False }
+        else 
+          succeed { state | index = state.index + 1, noteOnSequence = False}
 
       Tempo t -> 
         succeed { state | microsecondsPerBeat = Basics.toFloat t, index = state.index + 1, noteOnSequence = False}
