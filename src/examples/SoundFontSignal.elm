@@ -9,7 +9,7 @@ perhaps m = case m of
 
 -- try to load a snare sample
 pianoSample : Signal (Maybe SoundSample)
-pianoSample = loadSoundFont  "acoustic_grand_piano"
+pianoSample = loadSoundFont getAudioContext "acoustic_grand_piano"
 
 main : Signal Element
 main =

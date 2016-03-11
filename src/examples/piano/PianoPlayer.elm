@@ -15,11 +15,12 @@ import WebMidi exposing (..)
 type alias Model =
     { samples : Dict Int SoundSample
     , loaded : Bool
+    , maybeContext : Maybe AudioContext
     }
 
 init : String -> (Model, Effects Action)
 init topic =
-  ( {samples = Dict.empty, loaded = False }
+  ( {samples = Dict.empty, loaded = False, maybeContext = Nothing }
   , Effects.none
   )
 
@@ -42,28 +43,45 @@ update action model =
         Just ss -> 
           case ss.name of
             "end" ->
-               ({ samples = model.samples, loaded = True },  connectMidiDevices)
+               (finaliseModel model,  connectMidiDevices)
             _ -> 
-              let pitch = toInt ss.name
+              let 
+                pitch = toInt ss.name
               in
-                ( { samples = Dict.insert pitch ss model.samples, loaded = model.loaded }, 
+                ( {model |  samples = Dict.insert pitch ss model.samples }, 
                   Effects.none
                 )        
    
-    Play note ->  (model, playNote note model.samples )
+    Play note ->  (model, playNote model.maybeContext note model.samples )
+
+{- finalise the model by setting the audio context -}
+finaliseModel : Model -> Model
+finaliseModel m =
+  let
+    ctx = 
+      if (isWebAudioEnabled) then
+        Just getAudioContext
+      else
+        Nothing
+  in
+    { m | maybeContext = ctx, loaded = True }
 
 
-playNote : MidiNote -> Dict Int SoundSample -> Effects Action
-playNote note samples =       
+playNote : Maybe AudioContext -> MidiNote -> Dict Int SoundSample -> Effects Action
+playNote mctx note samples =       
     let n = Dict.get note.pitch samples  
         maxVelocity = 0x7F
         gain =
           Basics.toFloat note.velocity / maxVelocity
         np = SoundBite n 0 gain
     in
-       maybePlay np
-      |> Task.map (\x -> NoOp)
-      |> Effects.task
+      case mctx of
+        Just ctx ->
+          maybePlay ctx np
+           |> Task.map (\x -> NoOp)
+           |> Effects.task
+        _ -> 
+          Effects.none
 
 {- inistialise any connected MIDI devices -}
 connectMidiDevices : Effects Action
@@ -109,7 +127,7 @@ defaultNote = MidiNote False 0 0 0 ""
 
 -- try to load the entire piano soundfont
 pianoFonts : Signal (Maybe SoundSample)
-pianoFonts = loadSoundFont  "acoustic_grand_piano"
+pianoFonts = loadSoundFont getAudioContext "acoustic_grand_piano"
 
 -- MIDI notes from the keyboard
 pianoNotes : Signal MidiNote

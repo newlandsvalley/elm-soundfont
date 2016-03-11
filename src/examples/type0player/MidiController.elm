@@ -46,9 +46,14 @@ type alias PlaybackState =
 type alias Model =
     { samples : Dict Int SoundSample
     , loaded : Bool
+    , maybeContext : Maybe AudioContext
     , track0 : Result String MidiTrack0
     , playbackState : PlaybackState
     }
+
+{-the slowdown in the player brought about by using elm's Tasks -}
+elmPlayerOverhead : Float
+elmPlayerOverhead = 0.923
     
 -- let's use this to mark the end of a track or a track in error we can't play
 endOfTrack : CoMidi.MidiEvent
@@ -59,6 +64,7 @@ init topic =
   ( { 
       samples = Dict.empty
     , loaded = False 
+    , maybeContext = Nothing
     , track0 = Err "not started"
     , playbackState = { index = 0 
                       , microsecondsPerBeat = Basics.toFloat 500000
@@ -94,7 +100,7 @@ update action model =
         Just ss -> 
           case ss.name of
             "end" ->
-               ({ model | loaded = True }, loadMidi "midi/lillasystern.midi" )
+               ( finaliseAudioContext model, loadMidi "midi/lillasystern.midi" )
             _ -> 
               let pitch = toInt ss.name
               in
@@ -145,6 +151,18 @@ update action model =
        -- otherwise stop    
        else
          (model, Effects.none )
+
+{- finalise the audio context in the model -}
+finaliseAudioContext : Model -> Model
+finaliseAudioContext m =
+  let
+    ctx = 
+      if (isWebAudioEnabled) then
+        Just getAudioContext
+      else
+        Nothing
+  in
+    { m | maybeContext = ctx, loaded = True }
    
    
 mToList : Maybe (List a) -> List a
@@ -194,7 +212,7 @@ nextEvent state track0Result =
 {- interpret the sound event - delay for the specified time and play the note if it's a NoteOn event -}
 interpretSoundEvent : SoundEvent -> PlaybackState -> Model -> Effects Action
 interpretSoundEvent soundEvent state model = 
-      (Task.sleep soundEvent.deltaTime 
+      (Task.sleep (soundEvent.deltaTime * elmPlayerOverhead)
         `andThen` \_ -> playEvent soundEvent state model)
       |> Task.map (\s -> 
          if s.playing then Play s else NoOp)
@@ -242,7 +260,12 @@ playEvent soundEvent state model =
           soundBite = 
            { mss = sample, time = 0.0, gain = gain }
         in
-          Task.map (\_ -> newstate) <| maybePlay soundBite
+          case model.maybeContext of
+            Just ctx -> 
+              Task.map (\_ -> newstate) <| maybePlay ctx soundBite
+            _ ->  
+              succeed { state | playing = False, noteOnSequence = False }
+              
       _  -> 
         succeed { state | index = state.index + 1, noteOnSequence = False}
    else
@@ -433,10 +456,14 @@ capsuleStyle =
 
 -- try to load the entire piano soundfont
 pianoFonts : Signal (Maybe SoundSample)
-pianoFonts = loadSoundFont  "acoustic_grand_piano"
+pianoFonts = loadSoundFont getAudioContext "acoustic_grand_piano"
 
 signals : List (Signal Action)
-signals = [Signal.map LoadFont pianoFonts]
+signals = 
+  if (isWebAudioEnabled) then 
+    [Signal.map LoadFont pianoFonts]
+  else
+    []
 
 
 

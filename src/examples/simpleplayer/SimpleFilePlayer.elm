@@ -95,8 +95,8 @@ loadMidi url =
    which is done by looking up the sound fonts.  We may also get a new Tempo
    indicator which requires us to reset the last tempo ready for further notes.
 -}
-nextSound : Int -> Dict Int SoundSample -> NoteEvent -> (Sounds, Float) -> (Sounds, Float)
-nextSound ticksPerBeat samples ne acc = 
+nextSound : AudioContext -> Int -> Dict Int SoundSample -> NoteEvent -> (Sounds, Float) -> (Sounds, Float)
+nextSound ctx ticksPerBeat samples ne acc = 
   let 
     (ticks, notable) = ne
     sounds = fst acc         
@@ -117,7 +117,7 @@ nextSound ticksPerBeat samples ne acc =
          gain =
            Basics.toFloat velocity / maxVelocity
          soundBite = { mss = sample, time = elapsedTime, gain = gain }
-         fn = maybePlay soundBite
+         fn = maybePlay ctx soundBite
        in
          (fn :: sounds,  microsecondsPerBeat)
      -- we've hit a new Tempo indicator to replace the last one
@@ -132,7 +132,8 @@ makeSounds ss perfResult =
      case perfResult of
        Ok perf ->
         let 
-          fn = nextSound perf.ticksPerBeat ss
+          ctx = getAudioContext
+          fn = nextSound ctx perf.ticksPerBeat ss
           defaultPace =  Basics.toFloat 500000
           line = perf.lines
                  |> List.head
@@ -197,10 +198,14 @@ view address model =
 
 -- try to load the entire piano soundfont
 pianoFonts : Signal (Maybe SoundSample)
-pianoFonts = loadSoundFont  "acoustic_grand_piano"
+pianoFonts = loadSoundFont getAudioContext "acoustic_grand_piano"
 
 signals : List (Signal Action)
-signals = [Signal.map LoadFont pianoFonts]
+signals = 
+  if (isWebAudioEnabled) then 
+    [Signal.map LoadFont pianoFonts]
+  else
+    []
 
 
 
