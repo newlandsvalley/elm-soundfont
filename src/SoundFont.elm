@@ -47,6 +47,10 @@ type alias SoundBite =
 isWebAudioEnabled : Bool
 isWebAudioEnabled = Native.SoundFont.isWebAudioEnabled
 
+{-| can the browser play ogg format ? -}
+canPlayOgg : Bool
+canPlayOgg = Native.SoundFont.canPlayOgg
+
 {-| Get the audio context -}
 getAudioContext : AudioContext 
 getAudioContext = Native.SoundFont.getAudioContext()

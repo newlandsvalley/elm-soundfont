@@ -16,10 +16,23 @@ Elm.Native.SoundFont.make = function (localRuntime) {
     /* is the browser web-audio enabled? */
     values.isWebAudioEnabled = function() {
       if (values.getAudioContext) {
-        return true
+        return true;
       }
       else {
-        return false
+        return false;
+      }
+    }
+
+    /* can the browser play ogg format? */
+    values.canPlayOgg = function() {
+      var audioTester = document.createElement("audio");
+      if (audioTester.canPlayType('audio/ogg')) {
+        console.log("browser supports ogg");
+        return true;
+      }
+      else {
+        console.log("browser does not support ogg");
+        return false;
       }
     }
    
@@ -42,7 +55,12 @@ Elm.Native.SoundFont.make = function (localRuntime) {
      * @returns {String} the Soundfont data url
      */
      values.nameToUrl = function(name) {
-       return 'soundfonts/' + name + '-ogg.js';
+       if (values.canPlayOgg()) {
+         return 'soundfonts/' + name + '-ogg.js';
+       }
+       else {
+         return 'soundfonts/' + name + '-mp3.js';
+       }
      }
 
     /*
