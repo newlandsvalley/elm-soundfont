@@ -17,19 +17,19 @@ Examples
 
 #### MIDI Keyboard
 
-Main.elm in the examples/piano directory is a bare-bones application that plays notes that are detected from an attached MIDI keyboard.  It first loads the acoustic grand piano soundfont into a Dictionary of AudioBuffers (one for each note).  It then detects keyboard presses and plays the corresponding note using the Web-Audio API.  To build, use:
+[Piano](https://github.com/newlandsvalley/elm-soundfont/tree/master/src/examples/piano) is a bare-bones application that plays notes that are detected from an attached MIDI keyboard.  It first loads the acoustic grand piano soundfont into a Dictionary of AudioBuffers (one for each note).  It then detects keyboard presses and plays the corresponding note using the Web-Audio API.  To build, use:
 
 elm-make src/examples/piano/Main.elm --output=Main.html
 
 #### MIDI File
 
-Main.elm in the examples/simpleplayer directory is a simple MIDI file player (it plays a Swedish tune called 'Lillasystern').  It first loads the acoustic grand piano soundfont as before, loads and parses the MIDI file and converts this into a performance simply by accumulating the elapsed times of each 'NoteOn' event. It then converts each of these to a playable 'sound bite' attached to the appropriate soundfont and plays them as a single uninterruptable Task. The player can be used with any type of MIDI file, but for multi-track input only the first melody track will be played. To build use:
+[Simpleplayer](https://github.com/newlandsvalley/elm-soundfont/tree/master/src/examples/simpleplayer) is a simple MIDI file player (it plays a Swedish tune called 'Lillasystern').  It first loads the acoustic grand piano soundfont as before, loads and parses the MIDI file and converts this into a performance simply by accumulating the elapsed times of each 'NoteOn' event. It then converts each of these to a playable 'sound bite' attached to the appropriate soundfont and plays them as a single uninterruptable Task. The player can be used with any type of MIDI file, but for multi-track input only the first melody track will be played. To build use:
 
 elm-make src/examples/simpleplayer/Main.elm --output=Main.html
 
 #### MIDI Audio Controller
 
-Main.elm in the examples/type0player directory is another MIDI file player. But here, the playback is controlled by means of start/pause/continue buttons in a half-finished CSS-styled player. The file must conform to MIDI type-0 (i.e. single track). To build use:
+[Type0player](https://github.com/newlandsvalley/elm-soundfont/tree/master/src/examples/type0player) is another MIDI file player. But here, the playback is controlled by means of start/pause/continue buttons in a half-finished CSS-styled player. The file must conform to MIDI type-0 (i.e. single track). To build use:
 
 elm-make src/examples/type0player/Main.elm --output=Main.html
 
