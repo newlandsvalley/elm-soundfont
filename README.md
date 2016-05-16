@@ -11,6 +11,10 @@ This project explores the possibilities of playing MIDI directly in the browser 
 
 At the moment, the sample file players handle only Type-0 MIDI files but the intention is eventually to handle Type-1 and Type-2 as well.
 
+Elm 0.17
+--------
+
+Of the three libraries mentioned above, _elm-comidi_ has been ported to 0.17 and _elm-webmidi_ has been deprecated.  At the moment, it is difficult to see what the future of _SoundFont_ might be. It should be possible to produce a version of the library using the new effect managers, but it depends on the ability of being able to place binary data (the audio buffers) into dictionaries.  Unless elm introduces an opaque byte array data type, I fail to see how this is possible.
 
 Examples
 --------
